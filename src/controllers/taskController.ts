@@ -69,12 +69,48 @@ export const deleteTask = async (
   res: Response
 ): Promise<void> => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, { isDeleted: true }, { new: true });
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
     if (!task) {
       res.status(404).json({ error: "Task not found" });
       return;
     }
     res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const getDeletedTasks = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const tasks = await Task.find({ isDeleted: true }).populate("assignedTo");
+    res.status(200).json(tasks);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const restoreTask = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: false },
+      { new: true }
+    );
+    if (!task) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+    res.status(200).json({ message: "Task restored successfully", task });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

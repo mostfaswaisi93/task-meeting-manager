@@ -6,6 +6,8 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  getDeletedTasks,
+  restoreTask,
 } from "../controllers/taskController";
 import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
@@ -68,6 +70,17 @@ router.delete(
   [param("id").isMongoId().withMessage("Invalid task ID")],
   validate,
   deleteTask
+);
+
+router.get("/deleted", authenticate, authorize("view_task"), getDeletedTasks);
+
+router.patch(
+  "/restore/:id",
+  authenticate,
+  authorize("edit_task"),
+  [param("id").isMongoId().withMessage("Invalid task ID")],
+  validate,
+  restoreTask
 );
 
 export default router;

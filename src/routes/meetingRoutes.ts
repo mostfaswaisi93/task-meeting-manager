@@ -6,6 +6,8 @@ import {
   createMeeting,
   updateMeeting,
   deleteMeeting,
+  getDeletedMeetings,
+  restoreMeeting,
 } from "../controllers/meetingController";
 import { authenticate } from "../middlewares/auth";
 import { authorize } from "../middlewares/authorize";
@@ -56,6 +58,21 @@ router.delete(
   [param("id").isMongoId().withMessage("Invalid meeting ID")],
   validate,
   deleteMeeting
+);
+
+router.get(
+  "/deleted",
+  authenticate,
+  authorize("view_meeting"),
+  getDeletedMeetings
+);
+router.patch(
+  "/restore/:id",
+  authenticate,
+  authorize("edit_meeting"),
+  [param("id").isMongoId().withMessage("Invalid meeting ID")],
+  validate,
+  restoreMeeting
 );
 
 export default router;

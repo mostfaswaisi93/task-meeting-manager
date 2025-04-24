@@ -88,3 +88,37 @@ export const deleteMeeting = async (
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getDeletedMeetings = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const meetings = await Meeting.find({ isDeleted: true }).populate(
+      "participants"
+    );
+    res.status(200).json(meetings);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const restoreMeeting = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const meeting = await Meeting.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: false },
+      { new: true }
+    );
+    if (!meeting) {
+      res.status(404).json({ error: "Meeting not found" });
+      return;
+    }
+    res.status(200).json({ message: "Meeting restored successfully", meeting });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
