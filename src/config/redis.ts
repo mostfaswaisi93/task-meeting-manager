@@ -1,7 +1,9 @@
 import { createClient } from "redis";
 
 const redisClient = createClient({
-  url: process.env.REDIS_URL || "redis://localhost:6379",
+  url: `redis://${process.env.REDIS_HOST || "localhost"}:${
+    process.env.REDIS_PORT || "6379"
+  }`,
 });
 
 redisClient.on("error", (err) => {
@@ -11,9 +13,5 @@ redisClient.on("error", (err) => {
 redisClient.on("connect", () => {
   console.log("✅ Redis connected");
 });
-
-(async () => {
-  await redisClient.connect();
-})();
 
 export default redisClient;

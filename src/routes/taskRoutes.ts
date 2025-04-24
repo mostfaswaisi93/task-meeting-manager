@@ -1,17 +1,73 @@
-
-import express from 'express';
-import { body } from 'express-validator';
-import { getTasks, getTaskById, createTask, updateTask, deleteTask } from '../controllers/taskController';
-import { authenticate } from '../middlewares/auth';
-import { authorize } from '../middlewares/authorize';
-import validate from '../middlewares/validate';
+import express from "express";
+import { body, param } from "express-validator";
+import {
+  getTasks,
+  getTaskById,
+  createTask,
+  updateTask,
+  deleteTask,
+} from "../controllers/taskController";
+import { authenticate } from "../middlewares/auth";
+import { authorize } from "../middlewares/authorize";
+import validate from "../middlewares/validate";
 
 const router = express.Router();
 
-router.get('/', authenticate, authorize('view_task'), getTasks);
-router.get('/:id', authenticate, authorize('view_task'), getTaskById);
-router.post('/', authenticate, authorize('create_task'), createTask);
-router.put('/:id', authenticate, authorize('edit_task'), updateTask);
-router.delete('/:id', authenticate, authorize('delete_task'), deleteTask);
+// GET all tasks
+router.get("/", authenticate, authorize("view_task"), getTasks);
+
+// GET single task by ID
+router.get(
+  "/:id",
+  authenticate,
+  authorize("view_task"),
+  [param("id").isMongoId().withMessage("Invalid task ID")],
+  validate,
+  getTaskById
+);
+
+// CREATE task
+router.post(
+  "/",
+  authenticate,
+  authorize("create_task"),
+  [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("assignedTo")
+      .notEmpty()
+      .isMongoId()
+      .withMessage("Valid user ID required"),
+    body("dueDate").isISO8601().withMessage("Invalid date format"),
+  ],
+  validate,
+  createTask
+);
+
+// UPDATE task
+router.put(
+  "/:id",
+  authenticate,
+  authorize("edit_task"),
+  [
+    param("id").isMongoId().withMessage("Invalid task ID"),
+    body("title").optional().notEmpty(),
+    body("description").optional().isString(),
+    body("assignedTo").optional().isMongoId(),
+    body("dueDate").optional().isISO8601(),
+    body("status").optional().isIn(["pending", "in_progress", "completed"]),
+  ],
+  validate,
+  updateTask
+);
+
+// DELETE task
+router.delete(
+  "/:id",
+  authenticate,
+  authorize("delete_task"),
+  [param("id").isMongoId().withMessage("Invalid task ID")],
+  validate,
+  deleteTask
+);
 
 export default router;
