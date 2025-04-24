@@ -6,10 +6,15 @@ import logger from "./utils/logger";
 import { connectRabbitMQ } from "./config/rabbitmq";
 import redisClient from "./config/redis";
 import authRoutes from "./routes/authRoutes";
+import taskRoutes from "./routes/taskRoutes";
+import meetingRoutes from "./routes/meetingRoutes";
+import { createSuperAdmin } from "./seeder/createSuperAdmin";
 
 const app = express();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/meetings", meetingRoutes);
 
 i18n.configure({
   locales: ["en", "ar"],
@@ -24,6 +29,11 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send({ message: res.__("welcome") });
+});
+
+mongoose.connection.once("open", async () => {
+  console.log("MongoDB connected");
+  await createSuperAdmin();
 });
 
 app.use((err: any, req: any, res: any, next: any) => {
