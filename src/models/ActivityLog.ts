@@ -1,29 +1,29 @@
 import { Schema, model, Document } from "mongoose";
 
-export interface IActivityLog extends Document {
-  user: Schema.Types.ObjectId;
-  action: "create" | "update" | "delete" | "restore";
-  entity: "Task" | "Meeting" | "Role" | "Permission";
+interface IActivityLog extends Document {
+  action: string;
+  entityType: string;
   entityId: Schema.Types.ObjectId;
-  description?: string;
-  timestamp: Date;
+  userId: Schema.Types.ObjectId;
+  data: Record<string, any>;
+  createdAt: Date;
 }
 
-const activityLogSchema = new Schema<IActivityLog>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  action: {
-    type: String,
-    enum: ["create", "update", "delete", "restore"],
-    required: true,
+const activityLogSchema = new Schema<IActivityLog>(
+  {
+    action: { type: String, required: true },
+    entityType: { type: String, required: true },
+    entityId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      refPath: "entityType",
+    },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    data: { type: Schema.Types.Mixed, required: true },
   },
-  entity: {
-    type: String,
-    enum: ["Task", "Meeting", "Role", "Permission"],
-    required: true,
-  },
-  entityId: { type: Schema.Types.ObjectId, required: true },
-  description: { type: String },
-  timestamp: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
-export default model<IActivityLog>("ActivityLog", activityLogSchema);
+const ActivityLog = model<IActivityLog>("ActivityLog", activityLogSchema);
+
+export default ActivityLog;

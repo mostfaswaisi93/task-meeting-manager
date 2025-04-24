@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import Meeting from "../models/Meeting";
+import ActivityLog from "../models/ActivityLog";
 
 export const createMeeting = async (req: Request, res: Response) => {
   try {
@@ -7,6 +8,15 @@ export const createMeeting = async (req: Request, res: Response) => {
 
     const meeting = new Meeting({ title, agenda, participants, scheduledAt });
     await meeting.save();
+
+    const activityLog = new ActivityLog({
+      action: "Create",
+      entity: "Meeting",
+      entityId: meeting._id,
+      // performedBy: req.user._id,
+      details: `Created new meeting: ${meeting.title}`,
+    });
+    await activityLog.save();
 
     res.status(201).json({ message: res.__("meeting_created"), meeting });
   } catch (error: any) {
@@ -63,6 +73,16 @@ export const updateMeeting = async (
       res.status(404).json({ error: "Meeting not found" });
       return;
     }
+
+    const activityLog = new ActivityLog({
+      action: "Update",
+      entity: "Meeting",
+      entityId: meeting._id,
+      // performedBy: req.user._id,
+      details: `Updated meeting: ${meeting.title}`,
+    });
+    await activityLog.save();
+
     res.status(200).json(meeting);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -83,6 +103,16 @@ export const deleteMeeting = async (
       res.status(404).json({ error: "Meeting not found" });
       return;
     }
+
+    const activityLog = new ActivityLog({
+      action: "Delete",
+      entity: "Meeting",
+      entityId: meeting._id,
+      // performedBy: req.user._id,
+      details: `Deleted meeting: ${meeting.title}`,
+    });
+    await activityLog.save();
+
     res.status(200).json({ message: "Meeting deleted successfully" });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -117,6 +147,16 @@ export const restoreMeeting = async (
       res.status(404).json({ error: "Meeting not found" });
       return;
     }
+
+    const activityLog = new ActivityLog({
+      action: "Restore",
+      entity: "Meeting",
+      entityId: meeting._id,
+      // performedBy: req.user._id,
+      details: `Restored meeting: ${meeting.title}`,
+    });
+    await activityLog.save();
+
     res.status(200).json({ message: "Meeting restored successfully", meeting });
   } catch (err: any) {
     res.status(500).json({ error: err.message });

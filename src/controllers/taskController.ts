@@ -1,24 +1,35 @@
 import { Request, Response } from "express";
 import Task from "../models/Task";
-
-export const createTask = async (req: Request, res: Response) => {
-  try {
-    const { title, description, assignedTo, dueDate } = req.body;
-
-    const task = new Task({ title, description, assignedTo, dueDate });
-    await task.save();
-
-    res.status(201).json({ message: res.__("task_created"), task });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-};
+import ActivityLog from "../models/ActivityLog";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
     const tasks = await Task.find({ isDeleted: false }).populate("assignedTo");
-    // const tasks = await Task.find().populate("assignedTo", "name email");
     res.status(200).json(tasks);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+export const createTask = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { title, description, assignedTo, dueDate, status } = req.body;
+    const task = new Task({ title, description, assignedTo, dueDate, status });
+    await task.save();
+
+    const activityLog = new ActivityLog({
+      action: "Create",
+      entity: "Task",
+      entityId: task._id,
+      // performedBy: req.user._id,
+      details: `Created new task: ${task.title}`,
+    });
+    await activityLog.save();
+
+    res.status(201).json(task);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -54,10 +65,21 @@ export const updateTask = async (
       { title, description, assignedTo, dueDate, status },
       { new: true }
     );
+
     if (!task) {
       res.status(404).json({ error: "Task not found" });
       return;
     }
+
+    const activityLog = new ActivityLog({
+      action: "Update",
+      entity: "Task",
+      entityId: task._id,
+      // performedBy: req.user._id,
+      details: `Updated task: ${task.title}`,
+    });
+    await activityLog.save();
+
     res.status(200).json(task);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -74,11 +96,22 @@ export const deleteTask = async (
       { isDeleted: true },
       { new: true }
     );
+
     if (!task) {
       res.status(404).json({ error: "Task not found" });
       return;
     }
-    res.status(200).json({ message: "Task deleted successfully" });
+
+    const activityLog = new ActivityLog({
+      action: "Delete",
+      entity: "Task",
+      entityId: task._id,
+      // performedBy: req.user._id,
+      details: `Deleted task: ${task.title}`,
+    });
+    await activityLog.save();
+
+    res.status(200).json({ message: "Task marked as deleted" });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
@@ -106,11 +139,22 @@ export const restoreTask = async (
       { isDeleted: false },
       { new: true }
     );
+
     if (!task) {
       res.status(404).json({ error: "Task not found" });
       return;
     }
-    res.status(200).json({ message: "Task restored successfully", task });
+
+    const activityLog = new ActivityLog({
+      action: "Restore",
+      entity: "Task",
+      entityId: task._id,
+      // performedBy: req.user._id,
+      details: `Restored task: ${task.title}`,
+    });
+    await activityLog.save();
+
+    res.status(200).json({ message: "Task restored successfully" });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
