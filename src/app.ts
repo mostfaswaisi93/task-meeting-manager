@@ -9,12 +9,14 @@ import authRoutes from "./routes/authRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import meetingRoutes from "./routes/meetingRoutes";
 import { createSuperAdmin } from "./seeder/createSuperAdmin";
+import adminRoutes from "./routes/adminRoutes";
 
 const app = express();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/meetings", meetingRoutes);
+app.use("/api/admin", adminRoutes);
 
 i18n.configure({
   locales: ["en", "ar"],

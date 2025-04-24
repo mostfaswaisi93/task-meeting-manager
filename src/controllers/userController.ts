@@ -7,13 +7,17 @@ export const assignRoleToUser = async (req: Request, res: Response) => {
     const { userId, roleId } = req.body;
 
     const role = await Role.findById(roleId);
-    if (!role) return res.status(404).json({ error: "Role not found" });
+    if (!role) {
+      res.status(404).json({ error: "Role not found" });
+      return;
+    }
 
     const user = await User.findByIdAndUpdate(
       userId,
       { role: roleId },
       { new: true }
     );
+
     res.status(200).json(user);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
