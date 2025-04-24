@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import i18n from "i18n";
 import path from "path";
+import logger from "./utils/logger";
 
 const app = express();
 
@@ -18,6 +19,11 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send({ message: res.__("welcome") });
+});
+
+app.use((err: any, req: any, res: any, next: any) => {
+  logger.error(err.stack);
+  res.status(500).send({ error: res.__("internal_error") });
 });
 
 mongoose
