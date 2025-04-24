@@ -16,10 +16,13 @@ export const createMeeting = async (req: Request, res: Response) => {
 
 export const getMeetings = async (req: Request, res: Response) => {
   try {
-    const meetings = await Meeting.find().populate(
-      "participants",
-      "name email"
+    const meetings = await Meeting.find({ isDeleted: false }).populate(
+      "participants"
     );
+    // const meetings = await Meeting.find().populate(
+    //   "participants",
+    //   "name email"
+    // );
     res.status(200).json(meetings);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -71,7 +74,11 @@ export const deleteMeeting = async (
   res: Response
 ): Promise<void> => {
   try {
-    const meeting = await Meeting.findByIdAndDelete(req.params.id);
+    const meeting = await Meeting.findByIdAndUpdate(
+      req.params.id,
+      { isDeleted: true },
+      { new: true }
+    );
     if (!meeting) {
       res.status(404).json({ error: "Meeting not found" });
       return;

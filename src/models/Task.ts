@@ -5,7 +5,8 @@ export interface ITask extends Document {
   description?: string;
   assignedTo: Types.ObjectId;
   dueDate: Date;
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "in_progress" | "done";
+  isDeleted: Boolean;
 }
 
 const taskSchema = new Schema<ITask>(
@@ -16,13 +17,12 @@ const taskSchema = new Schema<ITask>(
     dueDate: { type: Date },
     status: {
       type: String,
-      enum: ["pending", "in_progress", "completed"],
+      enum: ["pending", "in_progress", "done"],
       default: "pending",
     },
+    isDeleted: { type: Boolean, default: false },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default mongoose.model<ITask>("Task", taskSchema);

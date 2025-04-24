@@ -5,6 +5,7 @@ export interface IMeeting extends Document {
   agenda?: string;
   participants: Types.ObjectId[];
   scheduledAt: Date;
+  isDeleted: Boolean;
 }
 
 const meetingSchema = new Schema<IMeeting>(
@@ -12,11 +13,9 @@ const meetingSchema = new Schema<IMeeting>(
     title: { type: String, required: true },
     agenda: { type: String },
     participants: [{ type: Schema.Types.ObjectId, ref: "User" }],
-    scheduledAt: { type: Date, required: true },
+    isDeleted: { type: Boolean, default: false },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default mongoose.model<IMeeting>("Meeting", meetingSchema);

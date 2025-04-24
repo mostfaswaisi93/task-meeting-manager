@@ -8,13 +8,17 @@ const router = express.Router();
 router.post(
   "/register",
   [
-    body("name").notEmpty().withMessage("Name is required"),
-    body("email").isEmail().withMessage("Valid email is required"),
+    body("name")
+      .notEmpty().withMessage("Name is required")
+      .isLength({ min: 3 }).withMessage("Name must be at least 3 characters"),
+    body("email")
+      .isEmail().withMessage("Valid email is required"),
     body("password")
-      .isLength({ min: 6 })
-      .withMessage("Password at least 6 chars"),
+      .isLength({ min: 6 }).withMessage("Password at least 6 chars")
+      .matches(/\d/).withMessage("Password must contain a number")
+      .matches(/[A-Za-z]/).withMessage("Password must contain a letter")
   ],
-  validate,
+  validate,  // هنا ضروري يكون بعد body validation
   register
 );
 

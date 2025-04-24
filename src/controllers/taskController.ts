@@ -16,7 +16,8 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const tasks = await Task.find().populate("assignedTo", "name email");
+    const tasks = await Task.find({ isDeleted: false }).populate("assignedTo");
+    // const tasks = await Task.find().populate("assignedTo", "name email");
     res.status(200).json(tasks);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -68,7 +69,7 @@ export const deleteTask = async (
   res: Response
 ): Promise<void> => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const task = await Task.findByIdAndUpdate(req.params.id, { isDeleted: true }, { new: true });
     if (!task) {
       res.status(404).json({ error: "Task not found" });
       return;
