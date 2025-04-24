@@ -1,4 +1,4 @@
-# task-meeting-manager Backend - Node.js | Express.js & MongoDB
+# Task Meeting Manager Backend - Node.js | Express.js & MongoDB
 
 ## Project setup
 
@@ -30,8 +30,6 @@ npm run start
 
 ### * Express-Validator
 
-### * Local Tunnel
-
 # Backend
 
-task-meeting-manager Backend
+Task Meeting Manager Backend
