@@ -1,0 +1,45 @@
+# dependencies
+/node_modules
+build/
+tmp/
+temp/
+logs/
+
+# IDE related
+.idea
+image/*
+
+# public folder
+public/
+
+# postman folder
+postman/
+
+package-lock.json
+pull.sh
+package-lock.*
+
+# dubugger config
+.env
+.env-production
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# System Files
+.DS_Store
+Thumbs.db
