@@ -15,10 +15,8 @@ import validate from "../middlewares/validate";
 
 const router = express.Router();
 
-// GET all tasks
 router.get("/", authenticate, authorize("view_task"), getTasks);
 
-// GET single task by ID
 router.get(
   "/:id",
   authenticate,
@@ -28,7 +26,6 @@ router.get(
   getTaskById
 );
 
-// CREATE task
 router.post(
   "/",
   authenticate,
@@ -45,7 +42,6 @@ router.post(
   createTask
 );
 
-// UPDATE task
 router.put(
   "/:id",
   authenticate,
@@ -62,7 +58,6 @@ router.put(
   updateTask
 );
 
-// DELETE task
 router.delete(
   "/:id",
   authenticate,

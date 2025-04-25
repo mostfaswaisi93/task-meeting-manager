@@ -8,7 +8,7 @@ export const createRole = async (req: Request, res: Response) => {
 
     const role = new Role({
       name,
-      permissions, // array of IDs
+      permissions,
     });
 
     await role.save();

@@ -31,7 +31,6 @@ export const createSuperAdmin = async () => {
     })
   );
 
-  //  Create Role superadmin
   let role = await Role.findOne({ name: superAdminSeed.role });
   if (!role) {
     role = new Role({

@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import i18n from "i18n";
+import http from "http";
 import path from "path";
 import logger from "./utils/logger";
 import { connectRabbitMQ } from "./config/rabbitmq";
@@ -13,10 +14,32 @@ import dotenv from "dotenv";
 import connectDB from "./config/database";
 import activityLogRoutes from "./routes/activityLogRoutes";
 import RabbitMQConsumer from "./services/rabbitmqConsumer";
+import { Server as SocketIOServer } from "socket.io";
+import { saveUserSocket, removeUserSocket } from "./utils/socketStore";
 
 dotenv.config();
 
 const app = express();
+
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
+app.set("io", io);
+
+io.on("connection", (socket) => {
+  socket.on("identify", (userId: string) => {
+    socket.data.userId = userId;
+    saveUserSocket(userId, socket.id);
+  });
+
+  socket.on("disconnect", () => {
+    removeUserSocket(socket.id);
+  });
+});
 
 // Middleware for routes
 app.use("/api/auth", authRoutes);
@@ -62,7 +85,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 //   }
 // })();
 
-RabbitMQConsumer.consumeQueue("task_notifications");
-RabbitMQConsumer.consumeQueue("meeting_notifications");
+// RabbitMQConsumer.consumeQueue("task_notifications");
+// RabbitMQConsumer.consumeQueue("meeting_notifications");
 
 export default app;
