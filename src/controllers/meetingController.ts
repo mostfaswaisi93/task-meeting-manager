@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Meeting from "../models/Meeting";
 import ActivityLog from "../models/ActivityLog";
+import RabbitMQService from "../services/rabbitmq";
 
 export const createMeeting = async (req: Request, res: Response) => {
   try {
@@ -17,6 +18,15 @@ export const createMeeting = async (req: Request, res: Response) => {
       details: `Created new meeting: ${meeting.title}`,
     });
     await activityLog.save();
+
+    const message = JSON.stringify({
+      type: "meeting_created",
+      meetingId: meeting._id,
+      title: meeting.title,
+      scheduledAt: meeting.scheduledAt,
+      participants: meeting.participants,
+    });
+    await RabbitMQService.sendToQueue("meeting_notifications", message);
 
     res.status(201).json({ message: res.__("meeting_created"), meeting });
   } catch (error: any) {

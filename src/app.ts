@@ -8,10 +8,11 @@ import redisClient from "./config/redis";
 import authRoutes from "./routes/authRoutes";
 import taskRoutes from "./routes/taskRoutes";
 import meetingRoutes from "./routes/meetingRoutes";
-import { createSuperAdmin } from "./seeder/createSuperAdmin";
 import adminRoutes from "./routes/adminRoutes";
 import dotenv from "dotenv";
 import connectDB from "./config/database";
+import activityLogRoutes from "./routes/activityLogRoutes";
+import RabbitMQConsumer from "./services/rabbitmqConsumer";
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/activity-logs", activityLogRoutes);
 
 // i18n configuration
 i18n.configure({
@@ -59,5 +61,8 @@ app.use((err: any, req: any, res: any, next: any) => {
 //     process.exit(1);
 //   }
 // })();
+
+RabbitMQConsumer.consumeQueue("task_notifications");
+RabbitMQConsumer.consumeQueue("meeting_notifications");
 
 export default app;

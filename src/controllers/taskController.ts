@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Task from "../models/Task";
 import ActivityLog from "../models/ActivityLog";
+import RabbitMQService from "../services/rabbitmq";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
@@ -28,6 +29,15 @@ export const createTask = async (
       details: `Created new task: ${task.title}`,
     });
     await activityLog.save();
+
+    const message = JSON.stringify({
+      type: "task_created",
+      taskId: task._id,
+      title: task.title,
+      assignedTo: task.assignedTo,
+      dueDate: task.dueDate,
+    });
+    await RabbitMQService.sendToQueue("task_notifications", message);
 
     res.status(201).json(task);
   } catch (err: any) {
