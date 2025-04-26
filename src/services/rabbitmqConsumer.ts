@@ -2,6 +2,8 @@ import amqp from "amqplib";
 import { Server as SocketIOServer } from "socket.io";
 import { getUserSocket } from "../utils/socketStore";
 import app from "../app";
+import { sendMail } from "./emailService";
+import i18n from "../config/i18n";
 
 class RabbitMQConsumer {
   static async consumeQueue(
@@ -68,14 +70,31 @@ class RabbitMQConsumer {
 
     if (message.type === "task_created" && message.assignedTo) {
       const socketId = getUserSocket(message.assignedTo);
+
+      const lang = message.assignedToLang || "en";
+      i18n.setLocale(lang);
+
+      const content = i18n.__("notifications.taskCreated", {
+        title: message.title,
+      });
+
       if (socketId) {
         io.to(socketId).emit("task:created", {
           title: message.title,
           dueDate: message.dueDate,
           taskId: message.taskId,
+          message: content,
         });
         console.log(
           `Real-time task notification sent to ${message.assignedTo}`
+        );
+      }
+
+      if (message.assignedToEmail) {
+        await sendMail(
+          message.assignedToEmail,
+          lang === "ar" ? "📌 تم تعيين مهمة لك" : "📌 Task Assigned to You",
+          `<p>${content}</p>`
         );
       }
     }
@@ -84,19 +103,36 @@ class RabbitMQConsumer {
       message.type === "meeting_created" &&
       Array.isArray(message.participants)
     ) {
-      message.participants.forEach((participantId: string) => {
-        const socketId = getUserSocket(participantId);
+      for (const participant of message.participants) {
+        const socketId = getUserSocket(participant.id);
+        const lang = participant.lang || "en";
+        i18n.setLocale(lang);
+
+        const content = i18n.__("notifications.meetingCreated", {
+          title: message.title,
+          scheduledAt: message.scheduledAt,
+        });
+
         if (socketId) {
           io.to(socketId).emit("meeting:created", {
             title: message.title,
             scheduledAt: message.scheduledAt,
             meetingId: message.meetingId,
+            message: content,
           });
           console.log(
-            `Real-time meeting notification sent to ${participantId}`
+            `Real-time meeting notification sent to ${participant.id}`
           );
         }
-      });
+
+        if (participant.email) {
+          await sendMail(
+            participant.email,
+            lang === "ar" ? "📅 دعوة إلى اجتماع" : "📅 Meeting Invitation",
+            `<p>${content}</p>`
+          );
+        }
+      }
     }
   }
 }

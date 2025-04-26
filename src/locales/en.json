@@ -1,3 +1,11 @@
 {
-  "welcome": "Welcome to Task Manager!"
+  "welcome": "Welcome to Task Manager!",
+  "notifications": {
+    "taskCreated": "You have a new task: {{title}}",
+    "meetingCreated": "You have a new meeting: {{title}}"
+  },
+  "email": {
+    "subjectTask": "📌 A task was assigned to you",
+    "subjectMeeting": "📅 You’ve been invited to a meeting"
+  }
 }

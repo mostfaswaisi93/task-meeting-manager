@@ -1,3 +1,11 @@
 {
-  "welcome": "مرحبًا بك في مدير المهام!"
+  "welcome": "مرحبًا بك في مدير المهام!",
+  "notifications": {
+    "taskCreated": "لديك مهمة جديدة: {{title}}",
+    "meetingCreated": "لديك اجتماع جديد: {{title}}"
+  },
+  "email": {
+    "subjectTask": "📌 تم تعيين مهمة لك",
+    "subjectMeeting": "📅 تمت دعوتك لاجتماع"
+  }
 }
