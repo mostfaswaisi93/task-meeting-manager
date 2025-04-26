@@ -16,6 +16,7 @@ import activityLogRoutes from "./routes/activityLogRoutes";
 import RabbitMQConsumer from "./services/rabbitmqConsumer";
 import { Server as SocketIOServer } from "socket.io";
 import { saveUserSocket, removeUserSocket } from "./utils/socketStore";
+import { scheduleWeeklySummary } from "./utils/cronJobs";
 
 dotenv.config();
 
@@ -87,5 +88,7 @@ app.use((err: any, req: any, res: any, next: any) => {
 
 // RabbitMQConsumer.consumeQueue("task_notifications");
 // RabbitMQConsumer.consumeQueue("meeting_notifications");
+
+// scheduleWeeklySummary();
 
 export default app;

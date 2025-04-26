@@ -7,5 +7,13 @@
   "email": {
     "subjectTask": "📌 A task was assigned to you",
     "subjectMeeting": "📅 You’ve been invited to a meeting"
+  },
+  "summary": {
+    "subject": "🗓️ Your Weekly Summary",
+    "hello": "Hello",
+    "pendingTasks": "Your pending tasks",
+    "noPendingTasks": "No pending tasks",
+    "upcomingMeetings": "Your upcoming meetings",
+    "noUpcomingMeetings": "No upcoming meetings"
   }
 }

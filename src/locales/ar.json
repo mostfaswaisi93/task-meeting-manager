@@ -7,5 +7,13 @@
   "email": {
     "subjectTask": "📌 تم تعيين مهمة لك",
     "subjectMeeting": "📅 تمت دعوتك لاجتماع"
+  },
+  "summary": {
+    "subject": "🗓️ ملخصك الأسبوعي",
+    "hello": "مرحبًا",
+    "pendingTasks": "المهام المعلقة الخاصة بك",
+    "noPendingTasks": "لا توجد مهام معلقة",
+    "upcomingMeetings": "الاجتماعات القادمة الخاصة بك",
+    "noUpcomingMeetings": "لا توجد اجتماعات قادمة"
   }
 }
