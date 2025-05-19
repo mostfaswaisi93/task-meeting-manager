@@ -1,4 +1,4 @@
-# TMM - Task Meeting Manager Backend - Node.js | Express.js & MongoDB
+# Task Meeting Manager Backend - Node.js | Express.js & MongoDB
 
 ## Project setup
 
